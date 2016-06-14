@@ -48,9 +48,9 @@
 module line_buffers(
 	input		CLK_I,
 	input		ODD_I,
-	input	[ 5:0]	F_ADR_I,
+	input	[ 8:0]	F_ADR_I,
 	output	[15:0]	F_DAT_O,
-	input	[ 5:0]	S_ADR_I,
+	input	[ 8:0]	S_ADR_I,
 	input	[15:0]	S_DAT_I,
 	input		S_WE_I
 );
