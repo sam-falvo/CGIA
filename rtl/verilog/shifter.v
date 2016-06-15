@@ -8,6 +8,7 @@ module shifter(
 	input		shift2_i,
 	input		shift4_i,
 	input		shift8_i,
+	input	[7:0]	index_xor_i,
 
 	output	[7:0]	color_o
 );
@@ -30,6 +31,6 @@ module shifter(
 	wire [7:0] bpp4 = {4'b0000, q[15:12]} & {8{shift4_i}};
 	wire [7:0] bpp8 = q[15:8] & {8{shift8_i}};
 
-	assign color_o = bpp1 | bpp2 | bpp4 | bpp8;
+	assign color_o = (bpp1 | bpp2 | bpp4 | bpp8) ^ index_xor_i;
 endmodule
 
