@@ -1,2 +1,2 @@
-Please read http://rfc.zeromq.org/spec:22/ for contributing guidelines.  Thanks!
+Please read http://rfc.zeromq.org/spec:42/C4/ for contributing guidelines.  Thanks!
 
