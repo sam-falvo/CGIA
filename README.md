@@ -32,8 +32,8 @@ The CGIA is designed for asynchronous RAMs accessed on an external bus.
 * Horizontal resolutions supported: 640, 320, 160 pixels.
 * Vertical resolutions supported: 480, 240 pixels.
 * Color depths supported: 65536, 256, 16, 4, 2.
-* Designed for 25MB/s bandwidth path to asynchronous video memory.
-* 25.0MHz or 25.2MHz dot clock.
+* Designed for 16-bit wide, 25MB/s bandwidth path to asynchronous video memory.
+* Accepts 25.0MHz to 25.2MHz dot clock.
 * Independent Wishbone clock.
 
 ## Wishbone Datasheet
@@ -48,7 +48,9 @@ Unless documented otherwise, the following datasheet applies to both slave and m
 * CLK_I
 * RESET_I
 
-### Video Memory Signals
+### Video Memory Master Signals
+
+This bus master interface is read-only.
 
 * V_ACK_I
 * V_ADR_O[23:1]
