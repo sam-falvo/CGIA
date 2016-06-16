@@ -58,6 +58,8 @@ module test_feeder();
 	wire load_i;		// 1 if the shifter should reload.
 	wire [8:0] f_adr_i;	// Line buffer fetch address.
 	reg [3:0] hctr_o;	// Horizontal pixel counter.
+	reg shift1_o;		// 1bpp video mode.
+	reg shift2_o;		// 2bpp video mode.
 
 	// Core Under Test
 	feeder f(
@@ -65,7 +67,9 @@ module test_feeder();
 		.scanline_en_i(scanline_en_o),
 		.load_o(load_i),
 		.f_adr_o(f_adr_i),
-		.hctr_i(hctr_o)
+		.hctr_i(hctr_o),
+		.shift1_i(shift1_o),
+		.shift2_i(shift2_o)
 	);
 
 	// 25MHz clock (1/25MHz = 40ns)
@@ -138,6 +142,8 @@ module test_feeder();
 		// happen on the final pixel, just in the nick of time to present
 		// the subsequent batch of pixels to the shifter.
 		story_o <= 16'h0200;		// Sync: start a new batch of 16 pixels.
+		shift1_o <= 1;
+		shift2_o <= 0;
 		scanline_en_o <= 0;
 		wait(clk_o); wait(~clk_o);
 		if(f_adr_i !== 0) begin
@@ -330,6 +336,209 @@ module test_feeder();
 		wait(clk_o); wait(~clk_o);
 		if(f_adr_i !== 2) begin
 			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		// When displaying in 2bpp mode, ...
+		story_o <= 16'h0300;		// Sync: start a new batch of 8 pixels.
+		shift1_o <= 0;
+		shift2_o <= 1;
+		scanline_en_o <= 0;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 0) begin
+			$display("@E %04X Expected fetch address 0; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 1) begin
+			$display("@E %04X Expected load_o asserted", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0301;		// At this point, CIB=pixel 0.
+		scanline_en_o <= 1;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0302;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0303;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0304;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0305;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0306;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0307;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0308;		// CIB=pixel 7
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 1) begin
+			$display("@E %04X Expected fetch address 1; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 1) begin
+			$display("@E %04X Expected load_o asserted", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0309;		// CIB=pixel 0 for next batch
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030A;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030B;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030C;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030D;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030E;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h030F;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 0) begin
+			$display("@E %04X Expected load_o negated", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0310;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 2) begin
+			$display("@E %04X Expected fetch address 2; got %d", story_o, f_adr_i);
+			$stop;
+		end
+		if(load_i !== 1) begin
+			$display("@E %04X Expected load_o asserted", story_o);
+			$stop;
+		end
+
+		story_o <= 16'h0311;
+		wait(clk_o); wait(~clk_o);
+		if(f_adr_i !== 3) begin
+			$display("@E %04X Expected fetch address 3; got %d", story_o, f_adr_i);
 			$stop;
 		end
 		if(load_i !== 0) begin
