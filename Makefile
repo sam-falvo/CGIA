@@ -1,6 +1,6 @@
-.PHONY: test test_fetcher test_line_buffers test_shifter test_feeder
+.PHONY: test test_fetcher test_line_buffers test_shift_register test_shifter test_feeder test_crtc
 
-test: test_fetcher test_line_buffers test_shifter test_feeder
+test: test_fetcher test_line_buffers test_shifter test_feeder test_crtc
 
 test_fetcher:
 	iverilog bench/verilog/fetcher.v rtl/verilog/fetcher.v
@@ -20,4 +20,8 @@ test_shift_register:
 
 test_feeder:
 	iverilog bench/verilog/feeder.v rtl/verilog/feeder.v
+	vvp -n a.out
+
+test_crtc:
+	iverilog bench/verilog/crtc.v rtl/verilog/crtc.v
 	vvp -n a.out
