@@ -228,8 +228,12 @@ module test_crtc();
 		end
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=1
 		
-		// We expect HVEN to assert when we're displaying the visible
-		// portion of the frame.
+		// We expect VDEN to assert when we're displaying the visible
+		// portion of the frame.  REMEMBER: Because vertical signals
+		// are sampled at the very end of each scanline (literally,
+		// one dot-clock before the start of a new scanline), we need
+		// to subtract one from the vertical fields so that the actual
+		// start and end of VDEN happens at the desired times.
 		story_o <= 16'h0700;
 		hsstart_o <= 5;
 		vsstart_o <= 3;
@@ -238,7 +242,7 @@ module test_crtc();
 		hvstart_o <= 1;
 		hvend_o <= 4;
 		vvstart_o <= 0;		// We "start" on the end of line 0, so it'll assert on line 1.
-		vvend_o <= 2;
+		vvend_o <= 2;		// We "end" on the end of line 2, so we'll be done by the time line 3 starts.
 		reset_o <= 1;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=0
 		reset_o <= 0;
