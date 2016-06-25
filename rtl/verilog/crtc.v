@@ -70,6 +70,7 @@ module crtc(
 	output		vsync_o,	// Vertical sync (active high)
 	output		hden_o,		// Horizontal display enable (active high)
 	output		vfen_o,		// Video fetch enable (active high)
+	output		vden_o,		// Vertical display enable (active high)
 	output	[9:0]	x_o,		// Current horizontal pixel counter (0..799)
 	output	[9:0]	y_o		// Current raster line counter (0..524)
 );
@@ -96,6 +97,11 @@ module crtc(
 		3'b110: vfen_o <= 0;
 		3'b111: vfen_o <= 0;
 		endcase
+	end
+
+	reg vden_o;
+	always @(posedge dotclk_i) begin
+		vden_o = (htotal_reached) ? vfen_o : vden_o;
 	end
 
 	reg hden_o;

@@ -21,6 +21,7 @@ module test_crtc();
 	wire vsync_i;
 	wire hden_i;
 	wire vfen_i;
+	wire vden_i;
 
 	crtc c(
 		.dotclk_i(dotclk_o),
@@ -37,6 +38,7 @@ module test_crtc();
 		.vvend_i(vvend_o),
 		.hden_o(hden_i),
 		.vfen_o(vfen_i),
+		.vden_o(vden_i),
 		.x_o(x_i),
 		.y_o(y_i)
 	);
@@ -245,7 +247,7 @@ module test_crtc();
 		hsstart_o <= 5;
 		vsstart_o <= 3;
 		htotal_o <= 5;
-		vtotal_o <= 3;
+		vtotal_o <= 5;
 		hvstart_o <= 1;
 		hvend_o <= 4;
 		vvstart_o <= 0;		// We "start" on the end of line 0, so it'll assert on line 1.
@@ -263,10 +265,18 @@ module test_crtc();
 			$display("@E %04X Expected VFEN negated", story_o);
 			$stop;
 		end
+		if(vden_i !== 0) begin
+			$display("@E %04X Expected VDEN negated", story_o);
+			$stop;
+		end
 		story_o <= 16'h0720;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=1
 		if(vfen_i !== 1) begin
 			$display("@E %04X Expected VFEN asserted", story_o);
+			$stop;
+		end
+		if(vden_i !== 0) begin
+			$display("@E %04X Expected VDEN negated", story_o);
 			$stop;
 		end
 		wait(dotclk_o); wait(~dotclk_o);	// X=1, Y=1
@@ -274,7 +284,16 @@ module test_crtc();
 		wait(dotclk_o); wait(~dotclk_o);	// X=3, Y=1
 		wait(dotclk_o); wait(~dotclk_o);	// X=4, Y=1
 		wait(dotclk_o); wait(~dotclk_o);	// X=5, Y=1
+		if(vden_i !== 0) begin
+			$display("@E %04X Expected VDEN negated", story_o);
+			$stop;
+		end
+		story_o <= 16'h0728;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=2
+		if(vden_i !== 1) begin
+			$display("@E %04X Expected VDEN asserted", story_o);
+			$stop;
+		end
 		wait(dotclk_o); wait(~dotclk_o);	// X=1, Y=2
 		wait(dotclk_o); wait(~dotclk_o);	// X=2, Y=2
 		wait(dotclk_o); wait(~dotclk_o);	// X=3, Y=2
@@ -285,10 +304,42 @@ module test_crtc();
 			$display("@E %04X Expected VFEN asserted", story_o);
 			$stop;
 		end
+		if(vden_i !== 1) begin
+			$display("@E %04X Expected VDEN asserted", story_o);
+			$stop;
+		end
 		story_o <= 16'h0740;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=3
 		if(vfen_i !== 0) begin
 			$display("@E %04X Expected VFEN negated", story_o);
+			$stop;
+		end
+		if(vden_i !== 1) begin
+			$display("@E %04X Expected VDEN asserted", story_o);
+			$stop;
+		end
+		wait(dotclk_o); wait(~dotclk_o);	// X=1, Y=3
+		wait(dotclk_o); wait(~dotclk_o);	// X=2, Y=3
+		wait(dotclk_o); wait(~dotclk_o);	// X=3, Y=3
+		wait(dotclk_o); wait(~dotclk_o);	// X=4, Y=3
+		story_o <= 16'h0750;
+		wait(dotclk_o); wait(~dotclk_o);	// X=5, Y=3
+		if(vfen_i !== 0) begin
+			$display("@E %04X Expected VFEN asserted", story_o);
+			$stop;
+		end
+		if(vden_i !== 1) begin
+			$display("@E %04X Expected VDEN asserted", story_o);
+			$stop;
+		end
+		story_o <= 16'h0760;
+		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=0
+		if(vfen_i !== 0) begin
+			$display("@E %04X Expected VFEN asserted", story_o);
+			$stop;
+		end
+		if(vden_i !== 0) begin
+			$display("@E %04X Expected VDEN negated", story_o);
 			$stop;
 		end
 		
