@@ -190,7 +190,10 @@ module test_crtc();
 
 		// We expect VSYNC to negate when the vertical counter wraps around.
 		story_o <= 16'h0500;
-		vtotal_o <= 3;
+		if(vsync_i !== 0) begin
+			$display("@E $04X Expected VSYNC negated.", story_o);
+			$stop;
+		end
 
 		// We expect HDEN to assert when we're displaying the visible
 		// portion of the scanline.
