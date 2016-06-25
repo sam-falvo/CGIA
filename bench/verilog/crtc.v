@@ -20,7 +20,7 @@ module test_crtc();
 	wire hsync_i;
 	wire vsync_i;
 	wire hden_i;
-	wire vden_i;
+	wire vfen_i;
 
 	crtc c(
 		.dotclk_i(dotclk_o),
@@ -36,7 +36,7 @@ module test_crtc();
 		.vvstart_i(vvstart_o),
 		.vvend_i(vvend_o),
 		.hden_o(hden_i),
-		.vden_o(vden_i),
+		.vfen_o(vfen_i),
 		.x_o(x_i),
 		.y_o(y_i)
 	);
@@ -231,12 +231,16 @@ module test_crtc();
 		end
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=1
 		
-		// We expect VDEN to assert when we're displaying the visible
+		// We expect VFEN to assert just before displaying the visible
 		// portion of the frame.  REMEMBER: Because vertical signals
 		// are sampled at the very end of each scanline (literally,
 		// one dot-clock before the start of a new scanline), we need
 		// to subtract one from the vertical fields so that the actual
-		// start and end of VDEN happens at the desired times.
+		// start and end of VFEN happens at the desired times.
+		//
+		// Since we enable VFEN one scanline before the VDEN line,
+		// this implies that the actual pixels will be displayed TWO
+		// lines down from where the vertical start says it should.
 		story_o <= 16'h0700;
 		hsstart_o <= 5;
 		vsstart_o <= 3;
@@ -255,14 +259,14 @@ module test_crtc();
 		wait(dotclk_o); wait(~dotclk_o);	// X=4, Y=0
 		story_o <= 16'h0710;
 		wait(dotclk_o); wait(~dotclk_o);	// X=5, Y=0
-		if(vden_i !== 0) begin
-			$display("@E %04X Expected VDEN negated", story_o);
+		if(vfen_i !== 0) begin
+			$display("@E %04X Expected VFEN negated", story_o);
 			$stop;
 		end
 		story_o <= 16'h0720;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=1
-		if(vden_i !== 1) begin
-			$display("@E %04X Expected VDEN asserted", story_o);
+		if(vfen_i !== 1) begin
+			$display("@E %04X Expected VFEN asserted", story_o);
 			$stop;
 		end
 		wait(dotclk_o); wait(~dotclk_o);	// X=1, Y=1
@@ -277,14 +281,14 @@ module test_crtc();
 		wait(dotclk_o); wait(~dotclk_o);	// X=4, Y=2
 		story_o <= 16'h0730;
 		wait(dotclk_o); wait(~dotclk_o);	// X=5, Y=2
-		if(vden_i !== 1) begin
-			$display("@E %04X Expected VDEN asserted", story_o);
+		if(vfen_i !== 1) begin
+			$display("@E %04X Expected VFEN asserted", story_o);
 			$stop;
 		end
 		story_o <= 16'h0740;
 		wait(dotclk_o); wait(~dotclk_o);	// X=0, Y=3
-		if(vden_i !== 0) begin
-			$display("@E %04X Expected VDEN negated", story_o);
+		if(vfen_i !== 0) begin
+			$display("@E %04X Expected VFEN negated", story_o);
 			$stop;
 		end
 		
